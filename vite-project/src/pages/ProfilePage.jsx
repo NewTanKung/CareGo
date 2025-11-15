@@ -39,120 +39,118 @@ export default function ProfilePage({
   };
 
   return (
-    <div className="min-h-screen bg-[#cfe5e7] flex flex-col items-center px-4 pt-8 pb-24">
-      <div className="w-full max-w-md">
-        <div className="rounded-[36px] shadow-[0_20px_60px_rgba(10,79,94,0.25)] overflow-hidden bg-[#cfe5e7] relative">
-          <header className="relative bg-gradient-to-r from-[#3a6f86] to-[#6ea9ba] text-white px-6 pt-10 pb-32 rounded-[36px]">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="h-14 w-14 rounded-full bg-white/20 flex items-center justify-center text-2xl font-semibold">
-                  {avatarLetter || ' '}
-                </div>
-                <div>
-                  <p className="text-sm text-white/80">ยินดีต้อนรับ</p>
-                  <p className="text-xl font-semibold">{headerName || ' '}</p>
-                </div>
+    <div className="min-h-screen bg-[#cfe5e7] px-4 pb-36 pt-10 md:px-8">
+      <div className="mx-auto w-full max-w-4xl space-y-8">
+        <div className="rounded-[42px] bg-gradient-to-r from-[#3a6f86] to-[#6ea9ba] px-8 py-10 text-white shadow-[0_25px_60px_rgba(42,110,131,0.35)]">
+          <div className="flex flex-wrap items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/25 text-2xl font-semibold">
+                {avatarLetter || ' '}
               </div>
-              <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
-                <span className="text-xl">🔔</span>
+              <div>
+                <p className="text-sm text-white/80">ยินดีต้อนรับ</p>
+                <p className="text-2xl font-semibold">{headerName || ' '}</p>
               </div>
             </div>
-          </header>
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-2xl">🔔</div>
+          </div>
+        </div>
 
-          <main className="-mt-16 px-5 pb-36 space-y-6">
-            {!showHealthPanel && (
-              <section className="bg-white rounded-[32px] shadow-xl p-6 space-y-6">
-                <div className="text-center space-y-4">
-                  <p className="text-2xl font-semibold text-[#1b3d4f]">ข้อมูลส่วนตัว</p>
-                  <div className="relative w-32 h-32 mx-auto">
-                    <div className="w-full h-full rounded-full bg-[#f2f9f9] shadow-inner flex items-center justify-center text-5xl text-[#2a6e83]">
-                      👩🏻
-                    </div>
-                    <span className="absolute bottom-3 right-3 h-9 w-9 rounded-full bg-white shadow flex items-center justify-center text-[#2a6e83]">
-                      🔒
-                    </span>
+        <div className="-mt-10 rounded-[40px] bg-white/90 px-6 pb-16 pt-12 shadow-[0_25px_70px_rgba(31,107,126,0.25)] ring-1 ring-white/60 md:px-10">
+          {!showHealthPanel && (
+            <section className="space-y-6">
+              <div className="text-center space-y-4">
+                <p className="text-2xl font-semibold text-[#1b3d4f]">ข้อมูลส่วนตัว</p>
+                <div className="relative mx-auto h-32 w-32">
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-[#f2f9f9] text-5xl text-[#2a6e83] shadow-inner">
+                    👩🏻
                   </div>
+                  <span className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#2a6e83] shadow">
+                    🔒
+                  </span>
                 </div>
+              </div>
 
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm text-[#1b3d4f]">ชื่อ-นามสกุล</label>
-                    <input
-                      type="text"
-                      value={profileName || ''}
-                      onChange={(e) => onProfileNameChange(e.target.value)}
-                      className="w-full rounded-2xl border border-white bg-[#f6fbfb] px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#2a6e83]"
-                      placeholder="ชื่อ-นามสกุล"
-                    />
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="space-y-2 text-sm text-[#1b3d4f] md:col-span-2">
+                  <span>ชื่อ-นามสกุล</span>
+                  <input
+                    type="text"
+                    value={profileName || ''}
+                    onChange={(e) => onProfileNameChange(e.target.value)}
+                    className="w-full rounded-2xl border border-white bg-[#f6fbfb] px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#2a6e83]"
+                    placeholder="ชื่อ-นามสกุล"
+                  />
+                </label>
+
+                <label className="space-y-2 text-sm text-[#1b3d4f]">
+                  <span>เพศ</span>
+                  <div className="relative">
+                    <select
+                      value={profileGender}
+                      onChange={(e) => onProfileGenderChange(e.target.value)}
+                      className="w-full appearance-none rounded-2xl border border-white bg-[#f6fbfb] px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#2a6e83]"
+                    >
+                      {GENDER_OPTIONS.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400">⌄</span>
                   </div>
+                </label>
 
-                  <div className="space-y-2">
-                    <label className="text-sm text-[#1b3d4f]">เพศ</label>
-                    <div className="relative">
-                      <select
-                        value={profileGender}
-                        onChange={(e) => onProfileGenderChange(e.target.value)}
-                        className="w-full appearance-none rounded-2xl border border-white bg-[#f6fbfb] px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#2a6e83]"
-                      >
-                        {GENDER_OPTIONS.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                      <span className="absolute inset-y-0 right-4 flex items-center text-slate-400 pointer-events-none">⌄</span>
-                    </div>
-                  </div>
+                <label className="space-y-2 text-sm text-[#1b3d4f]">
+                  <span>เบอร์โทรศัพท์</span>
+                  <input
+                    type="tel"
+                    value={profilePhone || ''}
+                    onChange={(e) => onProfilePhoneChange(e.target.value)}
+                    className="w-full rounded-2xl border border-white bg-[#f6fbfb] px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#2a6e83]"
+                    placeholder="XXX-XXX-XXXX"
+                  />
+                </label>
 
-                  <div className="space-y-2">
-                    <label className="text-sm text-[#1b3d4f]">เบอร์โทรศัพท์</label>
-                    <input
-                      type="tel"
-                      value={profilePhone || ''}
-                      onChange={(e) => onProfilePhoneChange(e.target.value)}
-                      className="w-full rounded-2xl border border-white bg-[#f6fbfb] px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#2a6e83]"
-                      placeholder="XXX-XXX-XXXX"
-                    />
-                  </div>
+                <label className="space-y-2 text-sm text-[#1b3d4f] md:col-span-2">
+                  <span>ญาติ / เบอร์ติดต่อฉุกเฉิน</span>
+                  <input
+                    type="tel"
+                    value={profileEmergencyContact || ''}
+                    onChange={(e) => onProfileEmergencyContactChange(e.target.value)}
+                    className="w-full rounded-2xl border border-white bg-[#f6fbfb] px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#2a6e83]"
+                    placeholder="XXX-XXX-XXXX"
+                  />
+                </label>
+              </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm text-[#1b3d4f]">ญาติ / เบอร์ติดต่อฉุกเฉิน</label>
-                    <input
-                      type="tel"
-                      value={profileEmergencyContact || ''}
-                      onChange={(e) => onProfileEmergencyContactChange(e.target.value)}
-                      className="w-full rounded-2xl border border-white bg-[#f6fbfb] px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#2a6e83]"
-                      placeholder="XXX-XXX-XXXX"
-                    />
-                  </div>
-                </div>
+              <button
+                type="button"
+                onClick={() => setShowHealthPanel(true)}
+                className="w-full rounded-2xl bg-[#1f6b7e] py-3 text-lg font-semibold text-white shadow-lg shadow-[#1f6b7e]/30 transition hover:bg-[#175361]"
+              >
+                ข้อมูลสุขภาพ
+              </button>
+            </section>
+          )}
 
+          {showHealthPanel && (
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-semibold text-[#1b3d4f]">ข้อมูลสุขภาพ</h2>
                 <button
                   type="button"
-                  onClick={() => setShowHealthPanel(true)}
-                  className="w-full rounded-2xl bg-[#1f6b7e] text-white py-3 text-lg font-semibold shadow-lg shadow-[#1f6b7e]/30 hover:bg-[#175361] transition"
+                  onClick={() => setShowHealthPanel(false)}
+                  className="text-xl text-gray-600 hover:text-gray-800"
+                  aria-label="กลับไปหน้าข้อมูลส่วนตัว"
                 >
-                  ข้อมูลสุขภาพ
+                  ×
                 </button>
-              </section>
-            )}
-
-            {showHealthPanel && (
-              <section className="space-y-4">
-                <div className="flex items-center justify-between px-1">
-                  <h2 className="text-2xl font-semibold text-[#1b3d4f]">ข้อมูลสุขภาพ</h2>
-                  <button
-                    type="button"
-                    onClick={() => setShowHealthPanel(false)}
-                    className="text-xl text-gray-600 hover:text-gray-800"
-                    aria-label="กลับไปหน้าข้อมูลส่วนตัว"
-                  >
-                    ×
-                  </button>
-                </div>
-                <div className="bg-white rounded-[32px] shadow-xl p-6 space-y-4">
+              </div>
+              <div className="rounded-[32px] bg-white p-6 shadow-xl">
+                <div className="grid gap-4 md:grid-cols-2">
                   {HEALTH_FIELDS.map((field) => (
-                    <label key={field.key} className="block text-sm text-slate-600">
+                    <label key={field.key} className="text-sm text-slate-600">
                       <span className="flex items-baseline justify-between">
                         <span>{field.label}</span>
                         {field.unit && <span className="text-xs text-slate-400">{field.unit}</span>}
@@ -177,9 +175,9 @@ export default function ProfilePage({
                     </label>
                   ))}
                 </div>
-              </section>
-            )}
-          </main>
+              </div>
+            </section>
+          )}
         </div>
       </div>
 
