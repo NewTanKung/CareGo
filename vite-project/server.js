@@ -19,8 +19,8 @@ app.use(express.json());
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'rootadmin',
-  database: process.env.DB_NAME || 'CareGoDB',
+  password: process.env.DB_PASSWORD || '123456',
+  database: process.env.DB_NAME || 'carego',
   port: Number(process.env.DB_PORT) || 3306,
   waitForConnections: true,
   connectionLimit: 10,
@@ -45,7 +45,7 @@ app.post('/api/login', async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      `SELECT id, email, username, password_hash, password AS password_plain
+      `SELECT id, email, username, password_hash
          FROM users
          WHERE email = ? OR username = ?
          LIMIT 1`,
@@ -79,6 +79,39 @@ app.post('/api/login', async (req, res) => {
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์', error: error.message });
+  }
+});
+
+app.post('/api/users', async (req, res) => {
+  const { username, email, password, status = 1 } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).json({ message: 'กรุณากรอกชื่อผู้ใช้ อีเมล และรหัสผ่าน' });
+  }
+
+  try {
+    const normalizedStatus = Number(status) === 0 ? 0 : 1;
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const [result] = await pool.query(
+      `INSERT INTO users (username, email, password_hash, status)
+       VALUES (?, ?, ?, ?)`,
+      [username.trim(), email.trim(), passwordHash, normalizedStatus],
+    );
+
+    res.status(201).json({
+      message: 'สร้างผู้ใช้สำเร็จ',
+      userId: result.insertId,
+    });
+  } catch (error) {
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({
+        message: error.message.includes('username') ? 'ชื่อผู้ใช้นี้ถูกใช้แล้ว' : 'อีเมลนี้ถูกใช้แล้ว',
+      });
+    }
+
+    console.error('Create user error:', error);
+    res.status(500).json({ message: 'ไม่สามารถสร้างผู้ใช้ได้', error: error.message });
   }
 });
 

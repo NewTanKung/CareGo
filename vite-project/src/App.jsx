@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import careGoLogo from './assets/CareGo.svg';
-// ไอคอน SVG เล็กๆ ที่เราจะใช้ในช่อง input ค่ะ (เหมือนเวทมนตร์เล็กๆ!)
-// ไอคอนสำหรับ "ผู้ใช้"
+
+// ไอคอน SVG ที่ใช้ซ้ำในทุกฟอร์ม
 const UserIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -19,7 +19,6 @@ const UserIcon = () => (
   </svg>
 );
 
-// ไอคอนสำหรับ "กุญแจ" (รหัสผ่าน)
 const LockIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +36,23 @@ const LockIcon = () => (
   </svg>
 );
 
-// ไอคอนสำหรับ Google (เผื่ออยากให้เท่ขึ้น!)
+const MailIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-5 w-5 text-gray-400"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={2}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M3 8l9 6 9-6M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"
+    />
+  </svg>
+);
+
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 48 48">
     <path
@@ -59,7 +74,6 @@ const GoogleIcon = () => (
   </svg>
 );
 
-// ไอคอนสำหรับ Facebook (หนูเสกเพิ่มให้ค่ะ!)
 const FacebookIcon = () => (
   <svg
     className="w-5 h-5"
@@ -71,7 +85,6 @@ const FacebookIcon = () => (
   </svg>
 );
 
-// ไอคอนสำหรับ "ตา" (แสดงรหัสผ่าน)
 const EyeIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -94,7 +107,6 @@ const EyeIcon = () => (
   </svg>
 );
 
-// ไอคอนสำหรับ "ตาที่ถูกปิด" (ซ่อนรหัสผ่าน)
 const EyeOffIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -117,22 +129,86 @@ const EyeOffIcon = () => (
   </svg>
 );
 
+const QUICK_ACTIONS = [
+  {
+    label: 'ผู้ช่วยดูแล',
+    description: 'ดูข้อมูลผู้ช่วย',
+    icon: '🧑‍⚕️',
+    colors: 'from-[#f3f7fb] to-[#e0eaf9]',
+  },
+  {
+    label: 'จองคิว/เวลา',
+    description: 'ตรวจสอบตาราง',
+    icon: '🗓️',
+    colors: 'from-[#f3f9f4] to-[#dff0e5]',
+  },
+  {
+    label: 'สอบถามข้อมูล',
+    description: 'แชทกับ CareGo',
+    icon: '💬',
+    colors: 'from-[#faf2fd] to-[#eadcf5]',
+  },
+  {
+    label: 'สถานะคนไข้',
+    description: 'ติดตามอาการ',
+    icon: '📊',
+    colors: 'from-[#fef6eb] to-[#fae3c8]',
+  },
+];
 
+const NAV_ITEMS = [
+  { label: 'หน้าหลัก', icon: '🏠', active: true },
+  { label: 'แชท', icon: '💬', active: false },
+  { label: 'จองคิว', icon: '🗓️', active: false },
+  { label: 'ข้อมูลส่วนตัว', icon: '👤', active: false },
+];
 
-// นี่คือคอมโพเนนต์หลักของหน้า Login ค่ะ
 export default function App() {
+  const [mode, setMode] = useState('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // เพิ่ม state สำหรับซ่อน/แสดงรหัสผ่านค่ะ
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [newUsername, setNewUsername] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [newConfirmPassword, setNewConfirmPassword] = useState('');
+  const [newShowPassword, setNewShowPassword] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  // ฟังก์ชันนี้จะทำงานเมื่อกดยืนยัน (ตอนนี้แค่ log ข้อมูลนะคะ)
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // ป้องกันหน้าเว็บโหลดใหม่
+  const resetMessages = () => {
     setErrorMessage('');
     setSuccessMessage('');
+  };
+
+  const switchMode = (nextMode) => {
+    if (nextMode === mode) {
+      return;
+    }
+
+    resetMessages();
+    setShowPassword(false);
+    setNewShowPassword(false);
+
+    if (nextMode === 'login') {
+      setNewUsername('');
+      setNewEmail('');
+      setNewPassword('');
+      setNewConfirmPassword('');
+    } else if (nextMode === 'create') {
+      setEmail('');
+      setPassword('');
+    }
+
+    setMode(nextMode);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    resetMessages();
     setIsLoading(true);
 
     try {
@@ -153,8 +229,11 @@ export default function App() {
         throw new Error(result.message || 'เข้าสู่ระบบไม่สำเร็จ');
       }
 
-      setSuccessMessage(result.message || 'เข้าสู่ระบบสำเร็จ');
-      console.log('User:', result.user);
+      setCurrentUser(result.user || { username: email });
+      setMode('home');
+      setEmail('');
+      setPassword('');
+      setShowPassword(false);
     } catch (error) {
       setErrorMessage(error.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
     } finally {
@@ -162,153 +241,448 @@ export default function App() {
     }
   };
 
-  return (
-    // ส่วนที่ 1: พื้นหลังและจัดกลาง
-    // เปลี่ยนพื้นหลังเป็นสีขาวสะอาดตา ตามแบบเลยค่ะ
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      
-      {/* ส่วนที่ 2: การ์ดฟอร์ม Login */}
-      {/* ลบเอฟเฟกต์กระจกฝ้าออก ให้เป็นพื้นขาวเรียบๆ */}
-      <div className="bg-white w-full max-w-md p-6 sm:p-8">
-        
-        {/* โลโก้ (หนูสร้าง placeholder ให้นะคะ องค์ชายใส่ <img> โลโก้ 'CareGo' จริงๆ ได้เลย) */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center h-28 w-28 bg-blue-100 rounded-full mb-4">
-            {/* นี่คือโลโก้ตัวอย่างนะคะ! */}
-            <img src={careGoLogo} />
-          </div>
-          <h1 className="text-4xl font-bold text-gray-900" style={{fontFamily: "'Arial', sans-serif"}}>CareGo</h1>
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    resetMessages();
+
+    if (newPassword !== newConfirmPassword) {
+      setErrorMessage('รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน');
+      return;
+    }
+
+    setIsCreating(true);
+
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: newUsername,
+          email: newEmail,
+          password: newPassword,
+          status: 1,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'ไม่สามารถสร้างผู้ใช้ได้');
+      }
+
+      setSuccessMessage(result.message || 'ลงทะเบียนสำเร็จ กรุณาเข้าสู่ระบบ');
+      setMode('login');
+      setEmail(newEmail);
+      setPassword('');
+      setNewUsername('');
+      setNewEmail('');
+      setNewPassword('');
+      setNewConfirmPassword('');
+      setNewShowPassword(false);
+    } catch (error) {
+      setErrorMessage(error.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setMode('login');
+    setEmail('');
+    setPassword('');
+    setShowPassword(false);
+    resetMessages();
+  };
+
+  const renderFeedback = (variant = 'light') => {
+    if (!errorMessage && !successMessage) {
+      return null;
+    }
+
+    if (variant === 'dark') {
+      return (
+        <div className="mt-6 space-y-2">
+          {errorMessage && (
+            <p className="text-center text-sm text-red-100 font-medium" role="alert">
+              {errorMessage}
+            </p>
+          )}
+          {successMessage && (
+            <p className="text-center text-sm text-emerald-100 font-medium" role="status">
+              {successMessage}
+            </p>
+          )}
         </div>
+      );
+    }
 
-        {/* ส่วนที่ 3: ฟอร์มสำหรับกรอกข้อมูล */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          
-          {/* ช่องกรอก Email/Username */}
-          <div>
-            {/* ลบ <label> ออกเพื่อให้เหมือนในรูปค่ะ */}
-            <div className="relative">
-              {/* ไอคอนที่อยู่ด้านซ้าย */}
-              <span className="absolute inset-y-0 left-0 flex items-center pl-4">
-                <UserIcon />
-              </span>
-              <input
-                id="email"
-                name="email"
-                type="text"
-                autoComplete="username"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="ชื่อผู้ใช้งาน (Username)"
-                // เปลี่ยนสไตล์ input เป็นพื้นหลังสีเทาอ่อนๆ
-                className="w-full pl-12 pr-4 py-3 bg-gray-100 text-gray-900 placeholder-gray-500 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
-              />
-            </div>
-          </div>
+    return (
+      <div className="space-y-2">
+        {errorMessage && (
+          <p className="text-center text-sm text-red-600" role="alert">
+            {errorMessage}
+          </p>
+        )}
+        {successMessage && (
+          <p className="text-center text-sm text-green-600" role="status">
+            {successMessage}
+          </p>
+        )}
+      </div>
+    );
+  };
 
-          {/* ช่องกรอก Password */}
-          <div>
-            {/* ลบ <label> ออก */}
-            <div className="relative">
-              {/* ไอคอนที่อยู่ด้านซ้าย */}
-              <span className="absolute inset-y-0 left-0 flex items-center pl-4">
-                <LockIcon />
-              </span>
-              <input
-                id="password"
-                name="password"
-                // เวทมนตร์สลับประเภท input ค่ะ!
-                type={showPassword ? 'text' : 'password'}
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="รหัสผ่าน"
-                // เปลี่ยนสไตล์ input เป็นพื้นหลังสีเทาอ่อนๆ
-                className="w-full pl-12 pr-12 py-3 bg-gray-100 text-gray-900 placeholder-gray-500 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
-              />
-              {/* นี่คือปุ่มกดสลับการมองเห็นรหัสผ่านนะคะ! */}
+  if (mode === 'home' && currentUser) {
+    return <HomePage user={currentUser} onLogout={handleLogout} />;
+  }
+
+  if (mode === 'create') {
+    return (
+      <main className="min-h-screen bg-[#bcd7d9] flex items-center justify-center px-4 py-10">
+        <section className="relative w-full max-w-md bg-gradient-to-b from-[#2a6e83] to-[#9ccfd2] text-white rounded-[42px] shadow-2xl overflow-hidden">
+          <div className="absolute -top-32 -right-16 w-80 h-80 bg-white/20 rounded-full" aria-hidden />
+          <div className="absolute -top-12 -left-24 w-64 h-64 bg-white/15 rounded-full" aria-hidden />
+
+          <div className="relative px-7 py-8 flex flex-col min-h-[660px]">
+            <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-4"
-                aria-label="Toggle password visibility"
+                onClick={() => switchMode('login')}
+                className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition"
+                aria-label="ย้อนกลับไปหน้าเข้าสู่ระบบ"
               >
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
               </button>
+              <p className="text-sm text-white/80">ย้อนกลับ</p>
             </div>
-            {/* ย้าย 'Forgot password?' มาไว้ด้านล่างตามแบบค่ะ */}
-            <div className="text-right mt-2">
-              <a href="#" className="text-sm text-blue-600 hover:text-blue-800 hover:underline">
-                ลืมรหัสผ่าน ?
-              </a>
+
+            <div className="mt-10 space-y-2">
+              <p className="text-xl font-semibold">ลงทะเบียน</p>
+              <h1 className="text-4xl font-bold leading-tight">ลงทะเบียนบัญชีของท่าน</h1>
+              <p className="text-sm text-white/80">
+                ดูแลทุกขั้นตอนอย่างใกล้ชิด เพื่อให้ประสบการณ์การดูแลสุขภาพใน CareGo เป็นเรื่องง่าย
+              </p>
+            </div>
+
+            <form onSubmit={handleCreateUser} className="mt-10 space-y-4 flex-1">
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4">
+                  <UserIcon />
+                </span>
+                <input
+                  type="text"
+                  required
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  placeholder="ชื่อผู้ใช้งาน (Username)"
+                  className="w-full pl-12 pr-4 py-3 rounded-2xl bg-white/90 text-slate-900 placeholder-slate-400 border border-white/30 focus:outline-none focus:ring-2 focus:ring-[#1d4c5a]"
+                />
+              </div>
+
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4">
+                  <MailIcon />
+                </span>
+                <input
+                  type="email"
+                  required
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder="อีเมล"
+                  className="w-full pl-12 pr-4 py-3 rounded-2xl bg-white/90 text-slate-900 placeholder-slate-400 border border-white/30 focus:outline-none focus:ring-2 focus:ring-[#1d4c5a]"
+                />
+              </div>
+
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4">
+                  <LockIcon />
+                </span>
+                <input
+                  type={newShowPassword ? 'text' : 'password'}
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="รหัสผ่าน"
+                  className="w-full pl-12 pr-12 py-3 rounded-2xl bg-white/90 text-slate-900 placeholder-slate-400 border border-white/30 focus:outline-none focus:ring-2 focus:ring-[#1d4c5a]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setNewShowPassword((prev) => !prev)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-4"
+                  aria-label="สลับการแสดงรหัสผ่าน"
+                >
+                  {newShowPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
+
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4">
+                  <LockIcon />
+                </span>
+                <input
+                  type={newShowPassword ? 'text' : 'password'}
+                  required
+                  value={newConfirmPassword}
+                  onChange={(e) => setNewConfirmPassword(e.target.value)}
+                  placeholder="ยืนยันรหัสผ่าน"
+                  className="w-full pl-12 pr-12 py-3 rounded-2xl bg-white/90 text-slate-900 placeholder-slate-400 border border-white/30 focus:outline-none focus:ring-2 focus:ring-[#1d4c5a]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setNewShowPassword((prev) => !prev)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-4"
+                  aria-label="สลับการแสดงยืนยันรหัสผ่าน"
+                >
+                  {newShowPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3 rounded-2xl bg-[#0e4f66] text-white text-lg font-semibold shadow-xl shadow-[#0e4f66]/30 hover:bg-[#0b4052] transition disabled:opacity-60"
+                disabled={isCreating}
+              >
+                {isCreating ? 'กำลังลงทะเบียน...' : 'ลงทะเบียน'}
+              </button>
+            </form>
+
+            {renderFeedback('dark')}
+
+            <div className="mt-8 space-y-3">
+              <div className="flex items-center gap-4">
+                <span className="flex-1 h-px bg-white/30" />
+                <span className="text-sm text-white/80">หรือ</span>
+                <span className="flex-1 h-px bg-white/30" />
+              </div>
+              <div className="flex justify-center gap-4">
+                <button
+                  type="button"
+                  className="h-12 w-12 rounded-full bg-white/80 flex items-center justify-center shadow-lg"
+                  aria-label="Sign up with Google"
+                >
+                  <GoogleIcon />
+                </button>
+                <button
+                  type="button"
+                  className="h-12 w-12 rounded-full bg-white/80 flex items-center justify-center shadow-lg"
+                  aria-label="Sign up with Facebook"
+                >
+                  <FacebookIcon />
+                </button>
+              </div>
             </div>
           </div>
+        </section>
+      </main>
+    );
+  }
 
-          {/* ส่วนที่ 4: ปุ่ม Login หลัก */}
-          <div>
-            <button
-              type="submit"
-              // เปลี่ยนข้อความและสไตล์ให้เป๊ะ!
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-md font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={isLoading}
-            >
-              {isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
-            </button>
+  return (
+    <main className="min-h-screen bg-[#e0eff0] flex items-center justify-center px-4 py-10">
+      <section className="w-full max-w-md bg-white/90 backdrop-blur border border-white rounded-[36px] shadow-2xl p-8 space-y-8">
+        <div className="text-center space-y-2">
+          <div className="mx-auto h-24 w-24 bg-[#d7eef1] rounded-full flex items-center justify-center shadow-inner">
+            <img src={careGoLogo} alt="CareGo logo" className="h-12" />
+          </div>
+          <p className="text-sm text-slate-500 tracking-[0.3em] uppercase">CareGo Portal</p>
+          <h1 className="text-3xl font-bold text-slate-800">เข้าสู่ระบบ</h1>
+          <p className="text-sm text-slate-500">ดูแลทุกการเดินทางของการแพทย์</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-4">
+              <UserIcon />
+            </span>
+            <input
+              type="text"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="ชื่อผู้ใช้หรืออีเมล"
+              className="w-full pl-12 pr-4 py-3 rounded-2xl bg-[#f3f7f8] text-slate-900 placeholder-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-[#4d8a9a]"
+            />
           </div>
 
-          {/* ปุ่มสร้างบัญชี (เพิ่มใหม่ตามแบบ!) */}
-          <div>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-4">
+              <LockIcon />
+            </span>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="รหัสผ่าน"
+              className="w-full pl-12 pr-12 py-3 rounded-2xl bg-[#f3f7f8] text-slate-900 placeholder-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-[#4d8a9a]"
+            />
             <button
               type="button"
-              className="w-full flex justify-center py-3 px-4 border border-blue-600 rounded-lg shadow-sm text-md font-semibold text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute inset-y-0 right-0 flex items-center pr-4"
+              aria-label="สลับการแสดงรหัสผ่าน"
             >
-              สร้างบัญชี
+              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
             </button>
           </div>
+
+          <div className="text-right">
+            <a href="#" className="text-sm font-medium text-[#1f6b7e] hover:underline">
+              ลืมรหัสผ่าน ?
+            </a>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-3 rounded-2xl bg-[#1f6b7e] text-white text-lg font-semibold shadow-lg shadow-[#1f6b7e]/30 hover:bg-[#185565] transition disabled:opacity-60"
+            disabled={isLoading}
+          >
+            {isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => switchMode('create')}
+            className="w-full py-3 rounded-2xl border border-[#1f6b7e] text-[#1f6b7e] font-semibold hover:bg-[#e7f0f2] transition"
+          >
+            ลงทะเบียนบัญชีใหม่
+          </button>
         </form>
 
-        {(errorMessage || successMessage) && (
-          <div className="mt-6">
-            {errorMessage && (
-              <p className="text-center text-sm text-red-600" role="alert">
-                {errorMessage}
-              </p>
-            )}
-            {successMessage && (
-              <p className="text-center text-sm text-green-600" role="status">
-                {successMessage}
-              </p>
-            )}
+        {renderFeedback('light')}
+
+        <div className="space-y-3">
+          <div className="flex items-center gap-4">
+            <span className="flex-1 h-px bg-gray-200" />
+            <span className="text-sm text-gray-500">หรือ</span>
+            <span className="flex-1 h-px bg-gray-200" />
           </div>
-        )}
+          <div className="flex justify-center gap-4">
+            <button
+              type="button"
+              className="h-12 w-12 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm"
+              aria-label="Sign in with Google"
+            >
+              <GoogleIcon />
+            </button>
+            <button
+              type="button"
+              className="h-12 w-12 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm"
+              aria-label="Sign in with Facebook"
+            >
+              <FacebookIcon />
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
 
-        {/* ส่วนที่ 5: ตัวคั่น "หรือ" */}
-        {/* เปลี่ยนเป็น text ธรรมดาเรียบๆ */}
-        <p className="text-center text-sm text-gray-500 my-6">
-          หรือ
-        </p>
+function HomePage({ user, onLogout }) {
+  const displayName = user?.username || user?.email || 'ผู้ใช้งาน CareGo';
+  const locationText = 'ศูนย์ดูแลผู้สูงอายุ CareGo';
 
-        {/* ส่วนที่ 6: ปุ่ม Social Login (เปลี่ยนเป็นไอคอนกลมๆ) */}
-        <div className="flex justify-center space-x-4">
+  return (
+    <div className="min-h-screen bg-[#cfe5e7] flex flex-col">
+      <header className="relative bg-gradient-to-r from-[#3a6f86] to-[#6ea9ba] text-white px-6 pt-10 pb-28 rounded-b-[36px] shadow-lg">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-14 w-14 rounded-full bg-white/20 flex items-center justify-center text-2xl font-semibold">
+              {displayName.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <p className="text-sm text-white/80">ยินดีต้อนรับ</p>
+              <p className="text-xl font-semibold">{displayName}</p>
+            </div>
+          </div>
           <button
             type="button"
-            className="p-3 inline-flex items-center justify-center border border-gray-300 rounded-full text-gray-500 hover:bg-gray-100 hover:border-gray-400 transition duration-300"
-            aria-label="Sign in with Google"
+            onClick={onLogout}
+            className="px-4 py-2 rounded-full bg-white/20 text-sm font-semibold backdrop-blur hover:bg-white/30 transition"
           >
-            <GoogleIcon />
-          </button>
-          <button
-            type="button"
-            className="p-3 inline-flex items-center justify-center border border-gray-300 rounded-full text-gray-500 hover:bg-gray-100 hover:border-gray-400 transition duration-300"
-            aria-label="Sign in with Facebook"
-          >
-            <FacebookIcon />
+            ออกจากระบบ
           </button>
         </div>
 
-        {/* ส่วนที่ 7: ลิงก์สำหรับสมัครสมาชิก (ลบออก เพราะเรามีปุ่ม 'สร้างบัญชี' แล้ว) */}
-      </div>
+        <div className="mt-6 bg-white/15 rounded-2xl p-4 backdrop-blur">
+          <p className="text-sm text-white/80">ที่อยู่ปัจจุบัน</p>
+          <p className="text-lg font-semibold">{locationText}</p>
+        </div>
+      </header>
+
+      <main className="-mt-16 px-5 flex-1 pb-24 space-y-6">
+        <section className="bg-white rounded-3xl shadow-xl p-5 space-y-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-gray-400">อยู่กับผู้ดูแล</p>
+              <p className="text-lg font-semibold text-[#34505d]">สถานะปกติ</p>
+            </div>
+            <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-semibold">
+              ดูแลอยู่
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {QUICK_ACTIONS.map((action) => (
+              <button
+                key={action.label}
+                type="button"
+                className={`bg-gradient-to-br ${action.colors} rounded-2xl p-4 text-left shadow-md flex gap-3 hover:shadow-lg transition`}
+              >
+                <span className="text-2xl">{action.icon}</span>
+                <div>
+                  <p className="text-sm font-semibold text-[#2f4d5a]">{action.label}</p>
+                  <p className="text-xs text-gray-600">{action.description}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-white rounded-3xl shadow-xl p-5 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="h-12 w-12 rounded-2xl bg-[#f6efe2] flex items-center justify-center text-2xl">🗓️</div>
+            <div>
+              <p className="text-sm font-semibold text-slate-700">นัดหมาย</p>
+              <p className="text-xs text-gray-500">วันนี้</p>
+            </div>
+          </div>
+          <div className="rounded-2xl bg-[#f4faf6] text-center py-6 text-[#3d6d6c] font-semibold">
+            ท่านยังไม่มีการนัดหมาย
+          </div>
+        </section>
+      </main>
+
+      <footer className="bg-white shadow-inner">
+        <nav className="flex justify-around py-3">
+          {NAV_ITEMS.map((item) => (
+            <button
+              type="button"
+              key={item.label}
+              className="flex flex-col items-center gap-1"
+            >
+              <span className={`text-2xl ${item.active ? 'text-[#2f6f80]' : 'text-gray-400'}`}>
+                {item.icon}
+              </span>
+              <span className={`text-xs ${item.active ? 'text-[#2f6f80] font-semibold' : 'text-gray-400'}`}>
+                {item.label}
+              </span>
+            </button>
+          ))}
+        </nav>
+      </footer>
     </div>
   );
 }
